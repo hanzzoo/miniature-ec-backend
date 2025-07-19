@@ -3,9 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sess
 from typing import AsyncGenerator
 import os
 
-from app.domain.Products import Products
 from app.repository.ProductRepository import ProductRepository
-from app.schemas import ProductResponse as ProductsSchema
+from app.schemas import ProductResponse
+# from app.schemas import ProductResponse as ProductsSchema
 
 DATABASE_URL = os.getenv("DATABASE_URL", "mysql+aiomysql://user:user_password@db:3306/my_database")
 engine = create_async_engine(DATABASE_URL, echo=True)
@@ -28,9 +28,9 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
-@app.get("/products", tags=["products"], response_model=list[ProductsSchema])
-async def get_all_products(db: AsyncSession = Depends(get_db)) -> list[Products]:
+@app.get("/products", tags=["products"])
+async def get_all_products(db: AsyncSession = Depends(get_db)):
     async with db.begin():
         repo = ProductRepository(db)
         result = await repo.get_all_products()
-        return result
+        return [ProductResponse.model_validate(product) for product in result]
