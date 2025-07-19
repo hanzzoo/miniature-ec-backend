@@ -1,3 +1,6 @@
+ALTER USER 'user'@'%' IDENTIFIED WITH mysql_native_password BY 'user_password';
+FLUSH PRIVILEGES;
+
 CREATE TABLE IF NOT EXISTS products (
   product_id VARCHAR(255) PRIMARY KEY,
   name VARCHAR(255),
