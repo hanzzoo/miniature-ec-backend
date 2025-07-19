@@ -10,3 +10,6 @@ dependencies = [
     "pytest>=8.4.1",
     "sqlalchemy>=1.4",
 ]
+
+[tool.mypy]
+strict = true
