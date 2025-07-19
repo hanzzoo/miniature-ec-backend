@@ -18,6 +18,10 @@ services:
       MYSQL_DATABASE: my_database
       MYSQL_USER: user
       MYSQL_PASSWORD: user_password
+      TZ: Asia/Tokyo
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - ./docker/my.cnf:/etc/mysql/my.cnf
       - ./docker/initdb.d:/docker-entrypoint-initdb.d
