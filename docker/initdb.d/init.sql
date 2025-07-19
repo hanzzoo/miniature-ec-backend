@@ -29,3 +29,12 @@ CREATE TABLE IF NOT EXISTS cart (
   user_id VARCHAR(255),
   created_at VARCHAR(255)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS cartItem (
+  instance VARCHAR(255),
+  product_id VARCHAR(255),
+  quantity INT,
+  added_at VARCHAR(255),
+  PRIMARY KEY (instance, product_id)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
