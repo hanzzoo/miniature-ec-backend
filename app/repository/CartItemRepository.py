@@ -37,15 +37,13 @@ class CartItemRepository:
             raise ValueError("Internal Server Error during cart instance validation")
 
 
-    async def add_product_to_cart(self, instance: str, product_id: str) -> None:
+    async def add_product_to_cart(self, instance: str, product_id: str, quantity: int) -> None:
       try:
         await self._validate_product_id(product_id)
         await self._validate_cart_instance(instance)
 
         added_at = datetime.datetime.now(datetime.timezone.utc)
-
-        #TODO: 複数商品を追加する場合は、CartItemのquantityを加算する
-        cart_item = CartItem(instance=instance, product_id=product_id, quantity=1, added_at=added_at)
+        cart_item = CartItem(instance=instance, product_id=product_id, quantity=quantity, added_at=added_at)
         self.db.add(cart_item)
         
         await self.db.flush()

@@ -65,9 +65,11 @@ async def add_to_cart(product_ids: list[str], db: AsyncSession = Depends(get_db)
             test_user_id = "test"
             instance = await repo.create_cart(test_user_id)
 
-            for product_id in product_ids:
-                repo = CartItemRepository(db)
-                await repo.add_product_to_cart(instance, product_id)
+            unique_product_ids = set(product_ids)
+            repo = CartItemRepository(db)
+            for product_id in unique_product_ids:
+                quantity = product_ids.count(product_id)
+                await repo.add_product_to_cart(instance, product_id, quantity)
                 
     except Exception as e:
         print(f"Error occurred while Add to Cart: {e}")
