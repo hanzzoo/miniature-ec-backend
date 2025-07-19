@@ -38,3 +38,17 @@ async def get_all_products(db: AsyncSession = Depends(get_db)) -> dict[str, list
     except Exception as e:
         print(f"Error occurred while fetching all products: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@app.get("/products/{product_id}", tags=["products_detail"], response_model=dict[str, ProductResponse])
+async def get_product_by_id(product_id: str, db: AsyncSession = Depends(get_db)) -> dict[str, ProductResponse]:
+    try:
+        async with db.begin():
+            repo = ProductRepository(db)
+            product = await repo.get_product_by_id(product_id)
+            if not product:
+                raise HTTPException(status_code=404, detail="Product not found")
+            json_data = ProductResponse.model_validate(product)
+            return {"product": json_data}
+    except Exception as e:
+        print(f"Error occurred while fetching product by ID {product_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")

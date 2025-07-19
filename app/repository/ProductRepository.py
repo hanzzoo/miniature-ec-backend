@@ -17,6 +17,10 @@ class ProductRepository:
         return []
 
     async def get_product_by_id(self, product_id: str) -> Products | None:
+      try:
         query = select(Products).where(Products.product_id == product_id)
         result = await self.db.execute(query)
         return result.scalars().one_or_none()
+      except Exception as e:
+        print(f"Error occurred while fetching product by ID {product_id}: {e}")
+        return None
