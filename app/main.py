@@ -5,6 +5,7 @@ import os
 
 from app.repository.ProductRepository import ProductRepository
 from app.repository.CartRepository import CartRepository
+from app.repository.CartItemRepository import CartItemRepository
 from app.schemas import ProductResponse
 # from app.schemas import CreateCartResponse
 
@@ -55,14 +56,18 @@ async def get_product_by_id(product_id: str, db: AsyncSession = Depends(get_db))
         print(f"Error occurred while fetching product by ID {product_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
-@app.post("/add_to_cart", tags=["cart"])
+@app.post("/add_to_cart", tags=["add_to_cart"])
 async def add_to_cart(product_ids: list[str], db: AsyncSession = Depends(get_db)) -> None:
     try:
         async with db.begin():
             repo = CartRepository(db)
             # FIXME: user_id or session_id
             test_user_id = "test"
-            await repo.create_cart(test_user_id)
+            instance = await repo.create_cart(test_user_id)
+
+            for product_id in product_ids:
+                repo = CartItemRepository(db)
+                await repo.add_product_to_cart(instance, product_id)
                 
     except Exception as e:
         print(f"Error occurred while Add to Cart: {e}")
