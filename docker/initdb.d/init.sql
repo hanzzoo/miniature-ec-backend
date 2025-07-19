@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS products (
   price VARCHAR(255),
   description VARCHAR(255),
   specs VARCHAR(255)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 
 INSERT INTO products (product_id, name, category_id, price, description, specs) VALUES
