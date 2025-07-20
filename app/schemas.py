@@ -17,5 +17,5 @@ class CartProductRequest(BaseModel):
     product_id: str
     quantity: int
 
-class AddToCartRequest(BaseModel):
+class UpdateToCartRequest(BaseModel):
     products: List[CartProductRequest]

@@ -7,7 +7,7 @@ from app.repository.ProductRepository import ProductRepository
 from app.repository.CartRepository import CartRepository
 from app.repository.CartItemRepository import CartItemRepository
 from app.schemas import ProductResponse
-from app.schemas import AddToCartRequest
+from app.schemas import UpdateToCartRequest
 
 DATABASE_URL = os.getenv("DATABASE_URL", "mysql+aiomysql://user:user_password@db:3306/my_database?charset=utf8mb4")
 engine = create_async_engine(DATABASE_URL, echo=True)
@@ -56,8 +56,8 @@ async def get_product_by_id(product_id: str, db: AsyncSession = Depends(get_db))
         print(f"Error occurred while fetching product by ID {product_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
-@app.post("/add_to_cart", tags=["add_to_cart"])
-async def add_to_cart(request: AddToCartRequest, db: AsyncSession = Depends(get_db)) -> None:
+@app.post("/update_to_cart", tags=["update_to_cart"])
+async def update_to_cart(request: UpdateToCartRequest, db: AsyncSession = Depends(get_db)) -> None:
     try:
         async with db.begin():
             cart_repo = CartRepository(db)
