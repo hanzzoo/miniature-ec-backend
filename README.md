@@ -11,12 +11,26 @@ curl "http://localhost:8000/products" | jq
 curl "http://localhost:8000/products/550e8400-e29b-41d4-a716-446655440000" | jq
 ```
 
+### ユーザー登録API
+- ユーザー登録APIのレスポンスには `token`が含まれ、<br>カートアイテム追加・更新・削除API / カートアイテム取得APIで利用する必要があります。（` -H "Authorization: Bearer <token>"`）
+```bash
+curl -X POST http://localhost:8000/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user": {
+      "user_email": "your-name",
+      "user_password": "your-password"
+    }
+  }'
+```
+
 ### カートアイテム追加・更新・削除API
 
 - カートアイテムの追加
 ```bash
 curl -X POST http://localhost:8000/cart/update \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
   -d '{
     "products": [
       { "product_id": "550e8400-e29b-41d4-a716-446655440000", "quantity": 1 },
@@ -29,6 +43,7 @@ curl -X POST http://localhost:8000/cart/update \
 ```diff
 curl -X POST http://localhost:8000/cart/update \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
   -d '{
     "products": [
 - { "product_id": "550e8400-e29b-41d4-a716-446655440000", "quantity": 1 },
@@ -43,6 +58,7 @@ curl -X POST http://localhost:8000/cart/update \
 ```diff
 curl -X POST http://localhost:8000/cart/update \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
   -d '{
     "products": [
 - { "product_id": "550e8400-e29b-41d4-a716-446655440000", "quantity": 1 },
@@ -54,10 +70,8 @@ curl -X POST http://localhost:8000/cart/update \
 
 ### カートアイテム取得API
 ```bash
-curl "http://localhost:8000/cart/items" | jq
+curl "http://localhost:8000/cart/items" -H "Authorization: Bearer <token>" | jq
 ```
-
-### TODO: ユーザー登録API
 
 ### TODO: ログインAPI
 
