@@ -71,3 +71,13 @@ class CartItemRepository:
       except Exception as e:
         print(f"Error occurred while adding product to cart: {e}")
         raise
+    
+    async def get_cart_items(self, instance: str):
+       try:
+          await self._validate_cart_instance(instance)
+          query = select(CartItem).where(CartItem.instance == instance)
+          result = await self.db.execute(query)
+          
+          return result.scalars().all()
+       except Exception as e:
+          raise RuntimeError(f"Not found cart items, {e}")
