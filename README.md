@@ -28,5 +28,10 @@ curl -i http://localhost:8000/products/550e8400-e29b-41d4-a716-446655440000
 ```bash
 curl -X POST http://localhost:8000/add_to_cart \
   -H "Content-Type: application/json" \
-  -d '["550e8400-e29b-41d4-a716-446655440000", "550e8400-e29b-41d4-a716-446655440001"]'
+  -d '{
+    "products": [
+      { "product_id": "550e8400-e29b-41d4-a716-446655440000", "quantity": 1 },
+      { "product_id": "550e8400-e29b-41d4-a716-446655440001", "quantity": 2 }
+    ]
+  }
 ```
