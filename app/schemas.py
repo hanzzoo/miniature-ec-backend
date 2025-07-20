@@ -5,8 +5,13 @@ class UserSchema(BaseModel):
     user_email: str
     user_password: str
 
-class CreateUserRequest(BaseModel):
+class RegisterRequest(BaseModel):
     user: UserSchema
+
+class RegisterResponse(BaseModel):
+    user_id: str
+    token: str
+    expire: str
 
 class ProductSchema(BaseModel):
     product_id: str
