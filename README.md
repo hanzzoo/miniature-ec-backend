@@ -52,6 +52,14 @@ curl -X POST http://localhost:8000/update_to_cart \
   }
 ```
 
+### TODO: カートアイテム取得API
+
+### TODO: ユーザー登録API
+
+### TODO: ログインAPI
+
+### TODO: 購入API
+
 
 
 ## Docker Containerの起動
