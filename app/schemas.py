@@ -1,6 +1,12 @@
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
+class UserSchema(BaseModel):
+    user_email: str
+    user_password: str
+
+class CreateUserRequest(BaseModel):
+    user: UserSchema
 
 class ProductSchema(BaseModel):
     product_id: str
