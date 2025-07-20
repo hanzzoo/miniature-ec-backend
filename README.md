@@ -20,7 +20,7 @@ curl -X POST http://localhost:8000/update_to_cart \
   -d '{
     "products": [
       { "product_id": "550e8400-e29b-41d4-a716-446655440000", "quantity": 1 },
-      { "product_id": "550e8400-e29b-41d4-a716-446655440001", "quantity": 2 },
+      { "product_id": "550e8400-e29b-41d4-a716-446655440001", "quantity": 2 }
     ]
   }'
 ```
@@ -32,7 +32,7 @@ curl -X POST http://localhost:8000/update_to_cart \
   -d '{
     "products": [
 - { "product_id": "550e8400-e29b-41d4-a716-446655440000", "quantity": 1 },
-+ { "product_id": "550e8400-e29b-41d4-a716-446655440000", "quantity": 2 },
++ { "product_id": "550e8400-e29b-41d4-a716-446655440000", "quantity": 2 }
       { "product_id": "550e8400-e29b-41d4-a716-446655440001", "quantity": 2 }
     ]
   }
@@ -46,7 +46,7 @@ curl -X POST http://localhost:8000/update_to_cart \
   -d '{
     "products": [
 - { "product_id": "550e8400-e29b-41d4-a716-446655440000", "quantity": 1 },
-+ { "product_id": "550e8400-e29b-41d4-a716-446655440000", "quantity": 0 },
++ { "product_id": "550e8400-e29b-41d4-a716-446655440000", "quantity": 0 }
       { "product_id": "550e8400-e29b-41d4-a716-446655440001", "quantity": 2 }
     ]
   }
