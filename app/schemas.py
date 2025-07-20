@@ -1,8 +1,8 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Any, List, Optional
+from typing import List, Optional
 
 
-class ProductResponse(BaseModel):
+class ProductSchema(BaseModel):
     product_id: str
     name: Optional[str] = None
     category_id: Optional[str] = None
@@ -10,8 +10,13 @@ class ProductResponse(BaseModel):
     description: Optional[str] = None
     specs: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+class GetProductsResponse(BaseModel):
+    products: List[ProductSchema]
+
+class GetProductResponse(BaseModel):
+    product: ProductSchema
 
 class CartProductRequest(BaseModel):
     product_id: str
@@ -28,4 +33,4 @@ class CartItemSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class GetCartItemResponse(BaseModel):
-    products: List[CartItemSchema] |  List[Any]
+    products: List[CartItemSchema]

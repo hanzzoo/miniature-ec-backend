@@ -6,7 +6,10 @@ import os
 from app.repository.ProductRepository import ProductRepository
 from app.repository.CartRepository import CartRepository
 from app.repository.CartItemRepository import CartItemRepository
-from app.schemas import CartItemSchema, ProductResponse
+from app.schemas import CartItemSchema
+from app.schemas import ProductSchema
+from app.schemas import GetProductsResponse
+from app.schemas import GetProductResponse
 from app.schemas import UpdateToCartRequest
 from app.schemas import GetCartItemResponse
 
@@ -31,28 +34,29 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
-@app.get("/products", tags=["products"], response_model=dict[str, list[ProductResponse]])
-async def get_all_products(db: AsyncSession = Depends(get_db)) -> dict[str, list[ProductResponse]]:
+@app.get("/products", tags=["products"], response_model=GetProductsResponse)
+async def get_all_products(db: AsyncSession = Depends(get_db)) -> GetProductsResponse:
     try:
         async with db.begin():
             repo = ProductRepository(db)
             result = await repo.get_all_products()
-            json_data = [ProductResponse.model_validate(product) for product in result]
-            return {"products": json_data}
+            products_schema = [ProductSchema.model_validate(product) for product in result]
+            return GetProductsResponse(products=products_schema)
     except Exception as e:
         print(f"Error occurred while fetching all products: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-@app.get("/products/{product_id}", tags=["products_detail"], response_model=dict[str, ProductResponse])
-async def get_product_by_id(product_id: str, db: AsyncSession = Depends(get_db)) -> dict[str, ProductResponse]:
+@app.get("/products/{product_id}", tags=["products_detail"], response_model=GetProductResponse)
+async def get_product_by_id(product_id: str, db: AsyncSession = Depends(get_db)) -> GetProductResponse:
     try:
         async with db.begin():
             repo = ProductRepository(db)
-            product = await repo.get_product_by_id(product_id)
-            if not product:
+            result = await repo.get_product_by_id(product_id)
+            if not result:
                 raise HTTPException(status_code=404, detail="Product not found")
-            json_data = ProductResponse.model_validate(product)
-            return {"product": json_data}
+            
+            products_schema = ProductSchema.model_validate(result)
+            return GetProductResponse(product=products_schema)
     except Exception as e:
         print(f"Error occurred while fetching product by ID {product_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
