@@ -23,9 +23,7 @@ class CartRepository:
       raise ValueError(f"not found cart instance, {e}")
     
   async def create_cart(self, user_id: str) -> str:
-    #TODO: user_idからカートのインスタンスを検索し既存のCartがあれば、そちらに保存
-    # (user_idはログインユーザーであれば、DB / 未ログインユーザーであればセッションIDとなる)
-    #TODO: ログインユーザーであれば、UserRepositoryにバリデーションメソッドを追加し、そちらで判定処理
+    #TODO: ログインユーザーであれば、UserRepositoryにバリデーションメソッドを追加し、処理成功でカート作成可能に変更
     try:
       has_created_instance = await self._get_instance(user_id)
 
