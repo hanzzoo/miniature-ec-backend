@@ -6,8 +6,9 @@ import os
 from app.repository.ProductRepository import ProductRepository
 from app.repository.CartRepository import CartRepository
 from app.repository.CartItemRepository import CartItemRepository
-from app.schemas import ProductResponse
+from app.schemas import CartItemSchema, ProductResponse
 from app.schemas import UpdateToCartRequest
+from app.schemas import GetCartItemResponse
 
 DATABASE_URL = os.getenv("DATABASE_URL", "mysql+aiomysql://user:user_password@db:3306/my_database?charset=utf8mb4")
 engine = create_async_engine(DATABASE_URL, echo=True)
@@ -72,4 +73,24 @@ async def update_to_cart(request: UpdateToCartRequest, db: AsyncSession = Depend
                 
     except Exception as e:
         print(f"Error occurred while Add to Cart: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+@app.get("/cart/items", tags=["get_cart_items"], response_model=GetCartItemResponse)
+async def get_cart_items(db: AsyncSession = Depends(get_db)) -> GetCartItemResponse:
+    try:
+        async with db.begin():
+            cart_repo = CartRepository(db)
+            # FIXME: user_id or session_id
+            test_user_id = "test"
+            instance = await cart_repo.get_instance(test_user_id)
+            if not instance:
+                return GetCartItemResponse(products=[])
+
+            cart_items_repo = CartItemRepository(db)
+            cart_items = await cart_items_repo.get_cart_items(instance)
+            cart_item_schemas = [CartItemSchema.model_validate(item) for item in cart_items]
+            
+            return GetCartItemResponse(products=cart_item_schemas)
+    except Exception as e:
+        print(f"Error occurred while get to cartItems: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
