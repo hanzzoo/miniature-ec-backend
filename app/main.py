@@ -1,11 +1,18 @@
-from fastapi import FastAPI, Depends, HTTPException
+import datetime
+from dotenv import load_dotenv
+from fastapi import FastAPI, Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from typing import AsyncGenerator
+from typing import Any, AsyncGenerator
 import os
+import jwt
 
+from app.repository.UserRepository import UserRepository
 from app.repository.ProductRepository import ProductRepository
 from app.repository.CartRepository import CartRepository
 from app.repository.CartItemRepository import CartItemRepository
+
+from app.schemas import RegisterRequest
+from app.schemas import RegisterResponse
 from app.schemas import CartItemSchema
 from app.schemas import ProductSchema
 from app.schemas import GetProductsResponse
@@ -26,13 +33,45 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
         yield session
 
+load_dotenv()
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+
+def create_jwt_token(user_id: str) -> tuple[str, str]:
+    expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
+    payload: dict[str, Any] = {
+        "user_id": user_id,
+        "exp": expire
+    }
+    token = jwt.encode(payload=payload, key=SECRET_KEY, algorithm=ALGORITHM) # type: ignore
+    return token, expire.isoformat()
+
+def decode_jwt_token(token: str) -> str:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM) # type: ignore
+        return payload["user_id"]
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
 @app.get("/")
 async def root():
     return {"message": "Hello from miniature-ec-backend!"}
 
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
+@app.post("/register", tags=["user_register"])
+async def register(user: RegisterRequest, db: AsyncSession = Depends(get_db)):
+    try:
+        async with db.begin():
+            user_repo = UserRepository(db)
+            user_id = await user_repo.register_user()
+            if not user_id:
+                return
+            token, expire = create_jwt_token(user_id=user_id)
+            return RegisterResponse(user_id=user_id, token=token, expire=expire)
+    except Exception:
+        raise
 
 @app.get("/products", tags=["products"], response_model=GetProductsResponse)
 async def get_all_products(db: AsyncSession = Depends(get_db)) -> GetProductsResponse:
@@ -62,13 +101,12 @@ async def get_product_by_id(product_id: str, db: AsyncSession = Depends(get_db))
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
 @app.post("/cart/update", tags=["update_to_cart"])
-async def update_to_cart(request: UpdateToCartRequest, db: AsyncSession = Depends(get_db)) -> None:
+async def update_to_cart(request: UpdateToCartRequest, db: AsyncSession = Depends(get_db), authorization: str = Header(None)) -> None:
     try:
         async with db.begin():
             cart_repo = CartRepository(db)
-            # FIXME: user_id or session_id
-            test_user_id = "test"
-            instance = await cart_repo.create_cart(test_user_id)
+            user_id = decode_jwt_token(authorization.replace("Bearer ", ""))
+            instance = await cart_repo.create_cart(user_id)
 
             cart_item_repo = CartItemRepository(db)
             for product in request.products:
@@ -80,13 +118,12 @@ async def update_to_cart(request: UpdateToCartRequest, db: AsyncSession = Depend
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
 @app.get("/cart/items", tags=["get_cart_items"], response_model=GetCartItemResponse)
-async def get_cart_items(db: AsyncSession = Depends(get_db)) -> GetCartItemResponse:
+async def get_cart_items(db: AsyncSession = Depends(get_db), authorization: str = Header(None)) -> GetCartItemResponse:
     try:
         async with db.begin():
             cart_repo = CartRepository(db)
-            # FIXME: user_id or session_id
-            test_user_id = "test"
-            instance = await cart_repo.get_instance(test_user_id)
+            user_id = decode_jwt_token(authorization.replace("Bearer ", ""))
+            instance = await cart_repo.get_instance(user_id)
             if not instance:
                 return GetCartItemResponse(products=[])
 
