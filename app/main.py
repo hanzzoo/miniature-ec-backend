@@ -57,7 +57,7 @@ async def get_product_by_id(product_id: str, db: AsyncSession = Depends(get_db))
         print(f"Error occurred while fetching product by ID {product_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
-@app.post("/update_to_cart", tags=["update_to_cart"])
+@app.post("/cart/update", tags=["update_to_cart"])
 async def update_to_cart(request: UpdateToCartRequest, db: AsyncSession = Depends(get_db)) -> None:
     try:
         async with db.begin():

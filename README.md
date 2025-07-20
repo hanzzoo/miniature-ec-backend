@@ -15,7 +15,7 @@ curl "http://localhost:8000/products/550e8400-e29b-41d4-a716-446655440000" | jq
 
 - カートアイテムの追加
 ```bash
-curl -X POST http://localhost:8000/update_to_cart \
+curl -X POST http://localhost:8000/cart/update \
   -H "Content-Type: application/json" \
   -d '{
     "products": [
@@ -27,7 +27,7 @@ curl -X POST http://localhost:8000/update_to_cart \
   - すでに商品がある場合、`quantity`を加算することで元の数量増加（更新）が可能
 
 ```diff
-curl -X POST http://localhost:8000/update_to_cart \
+curl -X POST http://localhost:8000/cart/update \
   -H "Content-Type: application/json" \
   -d '{
     "products": [
@@ -41,7 +41,7 @@ curl -X POST http://localhost:8000/update_to_cart \
 - カートアイテムの削除
  - 削除したい商品を `quantity: 0` で指定
 ```diff
-curl -X POST http://localhost:8000/update_to_cart \
+curl -X POST http://localhost:8000/cart/update \
   -H "Content-Type: application/json" \
   -d '{
     "products": [
