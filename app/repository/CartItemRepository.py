@@ -49,6 +49,11 @@ class CartItemRepository:
         result = await self.db.execute(query)
         cart_item = result.scalars().one_or_none()
 
+        if quantity == 0:
+            if cart_item:
+                await self.db.delete(cart_item)
+            return
+
         added_at = datetime.datetime.now(datetime.timezone.utc)
         if cart_item:
           setattr(cart_item, "quantity", quantity)
