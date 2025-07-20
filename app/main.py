@@ -70,6 +70,7 @@ async def add_to_cart(product_ids: list[str], db: AsyncSession = Depends(get_db)
             for product_id in unique_product_ids:
                 quantity = product_ids.count(product_id)
                 await repo.add_product_to_cart(instance, product_id, quantity)
+            #TODO: レスポンスに added_product: {'product_name': quantity}[]を返す
                 
     except Exception as e:
         print(f"Error occurred while Add to Cart: {e}")
