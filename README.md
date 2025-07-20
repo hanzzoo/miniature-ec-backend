@@ -52,7 +52,10 @@ curl -X POST http://localhost:8000/update_to_cart \
   }
 ```
 
-### TODO: カートアイテム取得API
+### カートアイテム取得API
+```bash
+curl "http://localhost:8000/cart/items" | jq
+```
 
 ### TODO: ユーザー登録API
 
