@@ -10,7 +10,7 @@ class CartRepository:
   def __init__(self, db: AsyncSession) -> None:
     self.db = db
   
-  async def _get_instance(self, user_id: str) -> str | None:
+  async def get_instance(self, user_id: str) -> str | None:
     try:
       query = select(Cart).where(Cart.user_id == user_id)
       result = await self.db.execute(query)
@@ -23,9 +23,8 @@ class CartRepository:
       raise ValueError(f"not found cart instance, {e}")
     
   async def create_cart(self, user_id: str) -> str:
-    #TODO: ログインユーザーであれば、UserRepositoryにバリデーションメソッドを追加し、処理成功でカート作成可能に変更
     try:
-      has_created_instance = await self._get_instance(user_id)
+      has_created_instance = await self.get_instance(user_id)
 
       if has_created_instance:
         return has_created_instance
