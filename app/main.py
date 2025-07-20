@@ -7,7 +7,7 @@ from app.repository.ProductRepository import ProductRepository
 from app.repository.CartRepository import CartRepository
 from app.repository.CartItemRepository import CartItemRepository
 from app.schemas import ProductResponse
-# from app.schemas import CreateCartResponse
+from app.schemas import AddToCartRequest
 
 DATABASE_URL = os.getenv("DATABASE_URL", "mysql+aiomysql://user:user_password@db:3306/my_database?charset=utf8mb4")
 engine = create_async_engine(DATABASE_URL, echo=True)
@@ -57,19 +57,17 @@ async def get_product_by_id(product_id: str, db: AsyncSession = Depends(get_db))
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
 @app.post("/add_to_cart", tags=["add_to_cart"])
-async def add_to_cart(product_ids: list[str], db: AsyncSession = Depends(get_db)) -> None:
+async def add_to_cart(request: AddToCartRequest, db: AsyncSession = Depends(get_db)) -> None:
     try:
         async with db.begin():
-            repo = CartRepository(db)
+            cart_repo = CartRepository(db)
             # FIXME: user_id or session_id
             test_user_id = "test"
-            instance = await repo.create_cart(test_user_id)
+            instance = await cart_repo.create_cart(test_user_id)
 
-            unique_product_ids = set(product_ids)
-            repo = CartItemRepository(db)
-            for product_id in unique_product_ids:
-                quantity = product_ids.count(product_id)
-                await repo.add_product_to_cart(instance, product_id, quantity)
+            cart_item_repo = CartItemRepository(db)
+            for product in request.products:
+                await cart_item_repo.update_product_to_cart(instance, product.product_id, product.quantity)
             #TODO: レスポンスに added_product: {'product_name': quantity}[]を返す
                 
     except Exception as e:

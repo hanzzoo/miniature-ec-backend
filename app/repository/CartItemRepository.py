@@ -37,7 +37,7 @@ class CartItemRepository:
             raise ValueError("Internal Server Error during cart instance validation")
 
 
-    async def add_product_to_cart(self, instance: str, product_id: str, quantity: int) -> None:
+    async def update_product_to_cart(self, instance: str, product_id: str, quantity: int) -> None:
       try:
         await self._validate_product_id(product_id)
         await self._validate_cart_instance(instance)
@@ -51,7 +51,7 @@ class CartItemRepository:
 
         added_at = datetime.datetime.now(datetime.timezone.utc)
         if cart_item:
-          setattr(cart_item, "quantity", cart_item.quantity + quantity)
+          setattr(cart_item, "quantity", quantity)
           setattr(cart_item, "added_at", added_at)
         else:
           cart_item = CartItem(

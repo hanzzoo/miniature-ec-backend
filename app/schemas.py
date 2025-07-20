@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 
 
 class ProductResponse(BaseModel):
@@ -12,3 +12,10 @@ class ProductResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class CartProductRequest(BaseModel):
+    product_id: str
+    quantity: int
+
+class AddToCartRequest(BaseModel):
+    products: List[CartProductRequest]
