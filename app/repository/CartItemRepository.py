@@ -42,9 +42,25 @@ class CartItemRepository:
         await self._validate_product_id(product_id)
         await self._validate_cart_instance(instance)
 
+        query = select(CartItem).where(
+            CartItem.instance == instance,
+            CartItem.product_id == product_id
+        )
+        result = await self.db.execute(query)
+        cart_item = result.scalars().one_or_none()
+
         added_at = datetime.datetime.now(datetime.timezone.utc)
-        cart_item = CartItem(instance=instance, product_id=product_id, quantity=quantity, added_at=added_at)
-        self.db.add(cart_item)
+        if cart_item:
+          setattr(cart_item, "quantity", cart_item.quantity + quantity)
+          setattr(cart_item, "added_at", added_at)
+        else:
+          cart_item = CartItem(
+              instance=instance,
+              product_id=product_id,
+              quantity=quantity,
+              added_at=added_at
+          )
+          self.db.add(cart_item)
         
         await self.db.flush()
       except Exception as e:
