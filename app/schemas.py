@@ -37,7 +37,7 @@ class ProductSchema(BaseModel):
     product_id: str
     name: Optional[str] = None
     category_id: Optional[str] = None
-    price: Optional[str] = None
+    price: Optional[int] = None
     description: Optional[str] = None
     specs: Optional[str] = None
 
@@ -70,7 +70,6 @@ class GetCartItemResponse(BaseModel):
 class PostPurchaseRequest(BaseModel):
     payment_method: str
     products: List[ProductSchema]
-    expected_shipping_date: datetime.datetime
 
 
 class PostPurchaseResponse(BaseModel):
