@@ -6,10 +6,10 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "user"
 
-    user_id = Column(String, primary_key=True)
-    user_name = Column(String)
-    user_email = Column(String)
-    user_password = Column(String)
+    user_id = Column(String, primary_key=True, index=True)
+    user_name = Column(String, index=True)
+    user_email = Column(String, primary_key=True, index=True)
+    user_password = Column(String, index=True)
     created_at = Column(String, default=datetime.datetime.now, index=True)
 
     def __init__(self, user_id: str, user_name: str, user_email: str, user_password: str, created_at: datetime.datetime):
