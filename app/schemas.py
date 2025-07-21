@@ -14,6 +14,24 @@ class RegisterResponse(BaseModel):
     token: str
     expire: str
 
+class LoginSchema(BaseModel):
+    user_email: str
+    user_password: str
+
+class LoginRequest(BaseModel):
+    user: LoginSchema
+
+class AuthorizeUserSchema(BaseModel):
+  user_id: str | None
+  user_name: str | None
+class AuthorizeUserSchemaWrapper(BaseModel):
+  user: AuthorizeUserSchema
+
+class LoginResponse(BaseModel):
+    user: AuthorizeUserSchema
+    token: str
+    expire: str
+
 class ProductSchema(BaseModel):
     product_id: str
     name: Optional[str] = None
