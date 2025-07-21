@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS products (
   product_id VARCHAR(255) PRIMARY KEY,
   name VARCHAR(255),
   category_id VARCHAR(255),
-  price VARCHAR(255),
+  price INT,
   description VARCHAR(255),
   specs VARCHAR(255)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS cartItem (
   instance VARCHAR(255),
   product_id VARCHAR(255),
   quantity INT,
+  price INT,
   added_at VARCHAR(255),
   PRIMARY KEY (instance, product_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
