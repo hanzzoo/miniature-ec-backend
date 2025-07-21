@@ -46,3 +46,9 @@ CREATE TABLE IF NOT EXISTS user (
   user_password VARCHAR(255),
   created_at VARCHAR(255)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS purchase (
+  purchase_id VARCHAR(255) PRIMARY KEY,
+  user_id VARCHAR(255),
+  purchased_at VARCHAR(255)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
