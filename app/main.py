@@ -23,6 +23,9 @@ from app.schemas import GetProductsResponse
 from app.schemas import GetProductResponse
 from app.schemas import UpdateToCartRequest
 from app.schemas import GetCartItemResponse
+# from app.schemas import PostPurchaseRequest
+
+from app.useCase.PurchaseUseCase import PurchaseUseCase
 
 DATABASE_URL = os.getenv("DATABASE_URL", "mysql+aiomysql://user:user_password@db:3306/my_database?charset=utf8mb4")
 engine = create_async_engine(DATABASE_URL, echo=True)
@@ -168,6 +171,21 @@ async def purchase(db: AsyncSession = Depends(get_db), authorization: str = Head
     try:
         async with db.begin():
             user_id = decode_jwt_token(authorization.replace("Bearer ", ""))
+
+            cart_repo = CartRepository(db)
+            instance = await cart_repo.get_instance(user_id)
+            if not instance:
+                return
+
+            cart_items_repo = CartItemRepository(db)
+            cart_items = await cart_items_repo.get_cart_items(instance)
+            cart_item_schemas = [CartItemSchema.model_validate(item) for item in cart_items]
+
+            products_repo = ProductRepository(db)
+
+            total = await PurchaseUseCase.calc_total_price(cart_items=cart_item_schemas, products_repo=products_repo)
+            print(f"total, {total}")
+
             purchase_repo = PurchaseRepository(db)
             purchase_id = await purchase_repo.order(user_id)
             print(f"purchase_id:, {purchase_id}")
