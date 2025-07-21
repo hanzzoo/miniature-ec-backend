@@ -13,6 +13,9 @@ from app.repository.CartItemRepository import CartItemRepository
 
 from app.schemas import RegisterRequest
 from app.schemas import RegisterResponse
+from app.schemas import LoginRequest
+from app.schemas import AuthorizeUserSchema
+from app.schemas import LoginResponse
 from app.schemas import CartItemSchema
 from app.schemas import ProductSchema
 from app.schemas import GetProductsResponse
@@ -60,7 +63,7 @@ def decode_jwt_token(token: str) -> str:
 async def root():
     return {"message": "Hello from miniature-ec-backend!"}
 
-@app.post("/register", tags=["user_register"])
+@app.post("/register", tags=["user_register"], response_model=RegisterResponse)
 async def register(user: RegisterRequest, db: AsyncSession = Depends(get_db)):
     try:
         async with db.begin():
@@ -76,6 +79,25 @@ async def register(user: RegisterRequest, db: AsyncSession = Depends(get_db)):
             return RegisterResponse(user_id=user_id, token=token, expire=expire)
     except Exception:
         raise
+
+@app.post("/login", tags=["login"], response_model=LoginResponse)
+async def login(user: LoginRequest, db: AsyncSession = Depends(get_db)) -> LoginResponse:
+    try:
+        async with db.begin():
+            user_repo = UserRepository(db)
+            is_password, auth_user = await user_repo.authorize_user(
+                user_email=user.user.user_email,
+                user_password=user.user.user_password
+            )            
+            auth_user_id = auth_user.user.user_id
+            auth_user_name = auth_user.user.user_name
+            if not is_password or not auth_user_id or not auth_user_name:
+                raise HTTPException(status_code=401, detail="Not found user")
+            token, expire = create_jwt_token(user_id=auth_user_id)
+            return LoginResponse(user=AuthorizeUserSchema(user_id=auth_user_id, user_name=auth_user_name), token=token, expire=expire)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
 
 @app.get("/products", tags=["products"], response_model=GetProductsResponse)
 async def get_all_products(db: AsyncSession = Depends(get_db)) -> GetProductsResponse:
