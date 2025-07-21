@@ -18,7 +18,8 @@ curl -X POST http://localhost:8000/register \
   -H "Content-Type: application/json" \
   -d '{
     "user": {
-      "user_email": "your-name",
+      "user_name": "your-name",
+      "user_email": "your-email",
       "user_password": "your-password"
     }
   }'
