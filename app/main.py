@@ -10,6 +10,7 @@ from app.repository.UserRepository import UserRepository
 from app.repository.ProductRepository import ProductRepository
 from app.repository.CartRepository import CartRepository
 from app.repository.CartItemRepository import CartItemRepository
+from app.repository.PurchaseRepository import PurchaseRepository
 
 from app.schemas import RegisterRequest
 from app.schemas import RegisterResponse
@@ -160,4 +161,16 @@ async def get_cart_items(db: AsyncSession = Depends(get_db), authorization: str 
             return GetCartItemResponse(products=cart_item_schemas)
     except Exception as e:
         print(f"Error occurred while get to cartItems: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+@app.post("/purchase", tags=["purchase"])
+async def purchase(db: AsyncSession = Depends(get_db), authorization: str = Header(None)):
+    try:
+        async with db.begin():
+            user_id = decode_jwt_token(authorization.replace("Bearer ", ""))
+            purchase_repo = PurchaseRepository(db)
+            purchase_id = await purchase_repo.order(user_id)
+            print(f"purchase_id:, {purchase_id}")
+    except Exception as e:
+        print(f"Order Failed", {e})
         raise HTTPException(status_code=500, detail="Internal Server Error")
