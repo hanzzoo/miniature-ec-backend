@@ -182,12 +182,13 @@ async def purchase(db: AsyncSession = Depends(get_db), authorization: str = Head
             cart_item_schemas = [CartItemSchema.model_validate(item) for item in cart_items]
 
             products_repo = ProductRepository(db)
-
-            total = await PurchaseUseCase.calc_total_price(cart_items=cart_item_schemas, products_repo=products_repo)
-            print(f"total, {total}")
+            result = await products_repo.get_all_products()
+            products_schema = [ProductSchema.model_validate(product) for product in result]
+            
+            total_amount = await PurchaseUseCase.calc_total_price(cart_items=cart_item_schemas, products=products_schema)
 
             purchase_repo = PurchaseRepository(db)
-            purchase_id = await purchase_repo.order(user_id)
+            purchase_id = await purchase_repo.order(user_id, total_amount)
             print(f"purchase_id:, {purchase_id}")
     except Exception as e:
         print(f"Order Failed", {e})
