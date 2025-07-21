@@ -65,7 +65,11 @@ async def register(user: RegisterRequest, db: AsyncSession = Depends(get_db)):
     try:
         async with db.begin():
             user_repo = UserRepository(db)
-            user_id = await user_repo.register_user()
+            user_id = await user_repo.register_user(
+                user_name=user.user.user_name,
+                user_email=user.user.user_email,
+                user_password=user.user.user_password
+            )
             if not user_id:
                 return
             token, expire = create_jwt_token(user_id=user_id)
