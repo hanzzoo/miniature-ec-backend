@@ -1,3 +1,4 @@
+import datetime
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
@@ -64,3 +65,15 @@ class CartItemSchema(BaseModel):
 
 class GetCartItemResponse(BaseModel):
     products: List[CartItemSchema]
+
+
+class PostPurchaseRequest(BaseModel):
+    payment_method: str
+    products: List[ProductSchema]
+    expected_shipping_date: datetime.datetime
+
+
+class PostPurchaseResponse(BaseModel):
+    ordered_products: List[ProductSchema]
+    order_completion_date: datetime.datetime
+    expected_shipping_date: datetime.datetime
