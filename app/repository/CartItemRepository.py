@@ -1,5 +1,7 @@
 
 import datetime
+from sqlalchemy import Sequence
+from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -72,7 +74,7 @@ class CartItemRepository:
         print(f"Error occurred while adding product to cart: {e}")
         raise
     
-    async def get_cart_items(self, instance: str):
+    async def get_cart_items(self, instance: str) -> Sequence[CartItem]:
        try:
           await self._validate_cart_instance(instance)
           query = select(CartItem).where(CartItem.instance == instance)
