@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
 class UserSchema(BaseModel):
+    user_name: str
     user_email: str
     user_password: str
 
