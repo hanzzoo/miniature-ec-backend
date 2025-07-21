@@ -41,11 +41,8 @@ CREATE TABLE IF NOT EXISTS cartItem (
 
 CREATE TABLE IF NOT EXISTS user (
   user_id VARCHAR(255) PRIMARY KEY,
-  created_at VARCHAR(255),
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS userInfo (
-  user_id VARCHAR(255) PRIMARY KEY,
   user_name VARCHAR(255),
-  user_email VARCHAR(255)
+  user_email VARCHAR(255),
+  user_password VARCHAR(255),
+  created_at VARCHAR(255)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
