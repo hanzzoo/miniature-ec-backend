@@ -1,37 +1,48 @@
 import datetime
-from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
+
+from pydantic import BaseModel, ConfigDict
+
 
 class UserSchema(BaseModel):
     user_name: str
     user_email: str
     user_password: str
 
+
 class RegisterRequest(BaseModel):
     user: UserSchema
+
 
 class RegisterResponse(BaseModel):
     user_id: str
     token: str
     expire: str
 
+
 class LoginSchema(BaseModel):
     user_email: str
     user_password: str
 
+
 class LoginRequest(BaseModel):
     user: LoginSchema
 
+
 class AuthorizeUserSchema(BaseModel):
-  user_id: str | None
-  user_name: str | None
+    user_id: str | None
+    user_name: str | None
+
+
 class AuthorizeUserSchemaWrapper(BaseModel):
-  user: AuthorizeUserSchema
+    user: AuthorizeUserSchema
+
 
 class LoginResponse(BaseModel):
     user: AuthorizeUserSchema
     token: str
     expire: str
+
 
 class ProductSchema(BaseModel):
     product_id: str
@@ -43,18 +54,23 @@ class ProductSchema(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class GetProductsResponse(BaseModel):
     products: List[ProductSchema]
 
+
 class GetProductResponse(BaseModel):
     product: ProductSchema
+
 
 class CartProductRequest(BaseModel):
     product_id: str
     quantity: int
 
+
 class UpdateToCartRequest(BaseModel):
     products: List[CartProductRequest]
+
 
 class CartItemSchema(BaseModel):
     product_id: str
@@ -62,6 +78,7 @@ class CartItemSchema(BaseModel):
     added_at: str
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class GetCartItemResponse(BaseModel):
     products: List[CartItemSchema]

@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
+
+
 class CartItem(Base):
     __tablename__ = "cartItem"
 

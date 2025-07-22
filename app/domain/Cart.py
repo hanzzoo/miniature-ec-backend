@@ -1,8 +1,11 @@
 import datetime
+
 from sqlalchemy import Column, String
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
+
+
 class Cart(Base):
     __tablename__ = "cart"
 
